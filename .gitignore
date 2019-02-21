@@ -1,0 +1,69 @@
+# Folders to ignore
+/dist
+/tmp
+/node_modules
+/bower_components
+/build
+/vendor
+/coverage
+/libpeerconnection.log
+/typings
+
+# Files to ignore
+npm-debug.log*
+testem.log*
+composer-lock.json
+
+# Boilerplate
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+Thumbs.db
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# OS or Editor folders
+/.idea
+/.vscode
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+.cache
+.project
+.settings
+.tmproj
+*.esproj
+nbproject
+*.sublime-project
+*.sublime-workspace
+.idea
+
+# Numerous always-ignore extensions
+*.diff
+*.err
+*.orig
+*.log
+*.rej
+*.swo
+*.swp
+*.zip
+*.vi
+*~
