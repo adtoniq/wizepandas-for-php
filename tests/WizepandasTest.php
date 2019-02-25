@@ -2,31 +2,37 @@
 use PHPUnit\Framework\TestCase;
 require_once('./src/Wizepandas.class.php');
 
+// mocks
+function loadWizePandasScript() {
+  return null;
+}
+function saveWizePandasScript($script) {
+}
+
 final class WizepandasTest extends TestCase
 {
     public function testCanSetApiKey()
     {
-        $instance = new WizePandas();
-        $instance->setApiKey('12345678-1234-5678');
-        $this->assertEquals(
-            '12345678-1234-5678',
-            $instance->getApiKey()
+        $config = array(
+          'apiKey' => '469ddcde-e87d-4f61-8bce-a759c46dcad9',
+          'loadScript' => 'loadWizePandasScript',
+          'saveScript' => 'saveWizePandasScript'
         );
-    }
-
-    public function testApiKeyMustBeString()
-    {
-        $instance = new WizePandas();
-        $instance->setApiKey(42);
+        $instance = new WizePandas($config);
         $this->assertEquals(
-            null,
+            '469ddcde-e87d-4f61-8bce-a759c46dcad9',
             $instance->getApiKey()
         );
     }
 
     public function testCanGetJavascript()
     {
-        $instance = new WizePandas();
+        $config = array(
+          'apiKey' => '469ddcde-e87d-4f61-8bce-a759c46dcad9',
+          'loadScript' => 'loadWizePandasScript',
+          'saveScript' => 'saveWizePandasScript'
+        );
+        $instance = new WizePandas($config);
         $instance->getLatestJavascript();
         $this->assertContains(
             '<script>',
@@ -36,7 +42,12 @@ final class WizepandasTest extends TestCase
 
     public function testCanGetHeadCode()
     {
-        $instance = new WizePandas();
+        $config = array(
+          'apiKey' => '469ddcde-e87d-4f61-8bce-a759c46dcad9',
+          'loadScript' => 'loadWizePandasScript',
+          'saveScript' => 'saveWizePandasScript'
+        );
+        $instance = new WizePandas($config);
         $instance->getLatestJavascript();
         $this->assertContains(
             '<script>',
@@ -46,7 +57,12 @@ final class WizepandasTest extends TestCase
 
     public function testCanGetBodyCode()
     {
-      $instance = new WizePandas();
+      $config = array(
+        'apiKey' => '469ddcde-e87d-4f61-8bce-a759c46dcad9',
+        'loadScript' => 'loadWizePandasScript',
+        'saveScript' => 'saveWizePandasScript'
+      );
+      $instance = new WizePandas($config);
       $output = $instance->getBodyCode();
       $this->assertEquals(
           "<iframe id='aq-ch' src='//static-42andpark-com.s3.amazonaws.com/html/danaton3.html' width='1' height='1' style='width:1px;height:1px;position:absolute;left:-1000;' frameborder=0></iframe>",

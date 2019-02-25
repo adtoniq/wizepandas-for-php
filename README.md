@@ -40,15 +40,15 @@ This code is part of our ad block detection tests. It should be at the top of th
 
 ### Code Snippet Caching / Updating
 
-The `wizepandas.php` file includes a sample implementation of the required injected code snippet persistent store. This implementation
+The `wizepandas.php` file provides a default implementation of the required injected code snippet persistent store. This implementation
 uses a combination of sessions and simple filesystem storage. <b>This requires that you create a writable directory
-named `fs` on your server.</b> Change the `JSPATH` setting to select a different location for storage of the code snippet.
+named `fs` on your server.</b> Provide a `jsPath` option in the `$wizepandas_config` options to select a different location for storage of the code snippet. This path and directory must be writable by PHP code when served.
 
 Our ad-block handling code is regularly updated in response to changes to ad-block rules, so it is best practice to retrieve the
-latest version once a day. The provided implementation retrieves the latest code on the first run and stores it in the
+latest version once a day. You can change the default expiry by providing a `jsExpiry` option (expiry in seconds). The provided implementation retrieves the latest code on the first run and stores it in the
 defined location on the filesystem and also stores a copy in the `$_SESSION` space.
 
-You can provide your own `loadScript` and `saveScript` functions using database, memcache, redis or other technologies, or use the
-provided implementation.
+You can provide your own `loadScript` and `saveScript` functions using database, memcache, redis or other technologies by 
+specifying `loadScript` and `saveScript` options in the `$wizepandas_config` options.
 
  
