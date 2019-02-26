@@ -1,8 +1,17 @@
+<?php session_start(); ?>
 <?php
 class WizePandas {
 
   // User API key generated at https://www.adtoniq.com/
 	private $_apiKey = '';
+
+  // path to create the fs directory in which you wish to cache the Javascript
+	// can be overriden -- this is a default
+	private $_jsPath = './fs/wizepandas.js';
+
+	// defines the expiry of javascript file
+	// this default refreshes the javascript from the server once a day
+	private $_jsExpiry = 86400;
 
   // Javascript string to inject in the <head> of the user site
 	private $_javascript = '';
@@ -13,30 +22,75 @@ class WizePandas {
 	// Plugin version number
 	private $_version = 'WizePandas-PHP-1.0.0';
 
+  // Script loading functions
 	private $_loadScript = null;
 
 	private $_saveScript = null;
 
 	// Check for and set javascript from persistent store
 	function __construct($options) {
-		$this->_loadScript = $options['loadScript'];
-		if (!is_callable($this->_loadScript)) {
-			throw new Exception('loadScript is required and must be a PHP function');
-			die();
+		// overrides for private load nad save script fiunctions
+		$this->_loadScript = isset($options['loadScript']) ? $options['loadScript'] : 'WizePandas::_loadWizePandasScript';
+		$this->_saveScript = isset($options['saveScript']) ?  $options['saveScript'] : 'WizePandas::_saveWizePandasScript';
+
+    // set vars for cached JS file
+		if (isset($options['jsPath'])) {
+			$this->_jsPath = $options['jsPath'];
 		}
-		$this->_saveScript = $options['saveScript'];
-		if (!is_callable($this->_saveScript)) {
-			throw new Exception('saveScript is required and must be a PHP function');
-			die();
+		if (isset($options['jsExpiry'])) {
+			$this->_jsExpiry = $options['jsExpiry'];
 		}
-		$this->_apiKey = $options['apiKey'];
 		// optionally override the API server for testing/debug
 		if (isset($options['apiVersion'])) {
 			$this->_apiVersion = $options['apiVersion'];
 		}
+		// set API key
+		$this->_apiKey = $options['apiKey'];
+		if (!is_callable($this->_loadScript)) {
+			throw new Exception('loadScript is required and must be a PHP function');
+			die();
+		}
+		if (!is_callable($this->_saveScript)) {
+			throw new Exception('saveScript is required and must be a PHP function');
+			die();
+		}
+
 		$script = call_user_func($this->_loadScript);
 		if (!is_null($script)) {
 			$this->_javascript = $script;
+		}
+	}
+
+	private function _loadWizePandasScript() {
+		if (isset($_SESSION['wizepandasJS'])) {
+			return $_SESSION['wizepandasJS'];
+		}
+		try {
+			if (file_exists($this->_jsPath)) {
+				$filemtime = filemtime($this->_jsPath);
+				$now = time();
+				if ($now - $filemtime < $this->_jsExpiry) {
+					$script = file_get_contents($this->_jsPath);
+					$_SESSION['wizepandasJS'] = $script;
+					return $script;
+				}
+			}
+		} catch (Exception $e) {
+			return null;
+		}
+		return null;
+	}
+
+	private function _saveWizePandasScript($script) {
+		$_SESSION['wizepandasJS'] = $script;
+		$pid = getmypid();
+		$tmpfile = $this->_jsPath . $pid;
+		try {
+			file_put_contents($tmpfile, $script);
+			// atomic on UNIX/Linux
+			rename($tmpfile, $this->_jsPath);
+		} catch (Exception $e) {
+			// error handling
 		}
 	}
 
